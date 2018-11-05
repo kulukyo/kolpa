@@ -12,7 +12,6 @@ package kolpa
 
 import (
 	"fmt"
-	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
@@ -21,8 +20,9 @@ import (
 // Generator struct to access various generator functions
 type Generator struct {
 	Locale_ string
-	Pkg     string
 }
+
+var DataDir string = "./data"
 
 // Debugging purposes
 var Print = fmt.Println
@@ -37,8 +37,6 @@ func C(localeVar ...string) Generator {
 	} else {
 		newGenerator.Locale_ = "en_US"
 	}
-	// newGenerator.populateFunctions()
-	newGenerator.Pkg = reflect.TypeOf(newGenerator).PkgPath()
 	return newGenerator
 }
 

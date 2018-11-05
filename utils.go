@@ -8,7 +8,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"reflect"
+	"path"
 	"regexp"
 	"strconv"
 	"strings"
@@ -94,10 +94,14 @@ func (g *Generator) formatToSlice(format string) []string {
 	return res
 }
 
+func (g *Generator) localeDir() string {
+	return path.Join(DataDir, g.Locale_)
+}
+
 // Reads the file "fName" and returns its content as a slice of strings.
 func (g *Generator) fileToSlice(fName string) ([]string, error) {
 	var res []string
-	path := os.Getenv("GOPATH") + "/src/" + g.Pkg + "/data/" + g.Locale_ + "/" + fName
+	path := path.Join(g.localeDir(), fName)
 	file, err := os.Open(path)
 
 	if err != nil {
@@ -125,9 +129,10 @@ func (g *Generator) fileToSliceAll(fName string) ([]string, error) {
 	var err error
 	var file *os.File
 
-	path := os.Getenv("GOPATH") + "/src/" + g.Pkg + "/data/" + g.Locale_ + "/"
+	// path := os.Getenv("GOPATH") + "/src/" + g.Pkg + "/data/" + g.Locale_ + "/"
+	localeDir := g.localeDir()
 
-	f, err := os.Open(path)
+	f, err := os.Open(localeDir)
 
 	if err != nil {
 		return nil, err
@@ -147,7 +152,7 @@ func (g *Generator) fileToSliceAll(fName string) ([]string, error) {
 	}
 
 	for _, name := range fNames {
-		file, err = os.Open(path + name)
+		file, err = os.Open(path.Join(localeDir, name))
 
 		if err != nil {
 			return nil, err
@@ -174,7 +179,7 @@ func (g *Generator) fileToSliceAll(fName string) ([]string, error) {
 // Reads the tab separated file 'fName' and returns its content as a map of strings to strings.
 func (g *Generator) fileToMap(fName string) map[string]string {
 	m := make(map[string]string)
-	path := os.Getenv("GOPATH") + "/src/" + g.Pkg + "/data/" + g.Locale_ + "/" + fName
+	path := path.Join(g.localeDir(), fName)
 	file, err := os.Open(path)
 
 	if err != nil {
@@ -212,8 +217,7 @@ func randBool() bool {
 
 // Returns all possible data for languages.
 func getLanguages() []string {
-	path := os.Getenv("GOPATH") + "/src/" + reflect.TypeOf(Generator{}).PkgPath() + "/data/"
-	files, _ := ioutil.ReadDir(path)
+	files, _ := ioutil.ReadDir(DataDir)
 	var n string
 	var res []string
 
